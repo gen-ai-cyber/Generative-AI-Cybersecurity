@@ -1,0 +1,7 @@
+name: genaicyber
+channels:
+  - defaults
+dependencies:
+  - pip
+  - pip: 
+    - -r requirements.txt

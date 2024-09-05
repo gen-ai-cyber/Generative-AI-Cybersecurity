@@ -1,0 +1,9 @@
+tensorflow
+torch
+scikit-learn
+dlib
+opencv-python
+face_recognition
+yara-python
+pefile
+keras
