@@ -1,3 +1,6 @@
+import numpy as np
+from layer import Layer
+
 class MaxPoolingLayer(Layer):
     def __init__(self, pool_size=(2, 2)):
         self.pool_size = pool_size
