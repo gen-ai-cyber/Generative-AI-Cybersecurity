@@ -1,3 +1,7 @@
+from dropout_layer import DropoutLayer
+from convolutional_layer import ConvLayer
+from max_pooling_layer import MaxPoolingLayer
+
 class Network:
     def __init__(self):
         self.layers = []
@@ -18,7 +22,13 @@ class Network:
         for i in range(samples):
             output = input_data[i]
             for layer in self.layers:
-                output = layer.forward_propagation(output)
+                if isinstance(layer, ConvLayer) or isinstance(layer, MaxPoolingLayer):
+                    output = layer.forward_propagation(output)
+                if isinstance(layer, DropoutLayer):
+                    output = layer.forward_propagation(output)
+                else:
+                    output = layer.forward_propagation(output)
+                    
             result.append(output)
 
         return result
@@ -31,8 +41,12 @@ class Network:
             for j in range(samples):
                 output = x_train[j]
                 for layer in self.layers:
-                    output = layer.forward_propagation(output)
-
+                    if isinstance(layer, ConvLayer) or isinstance(layer, MaxPoolingLayer):
+                        output = layer.forward_propagation(output)
+                    if isinstance(layer, DropoutLayer):
+                        output = layer.forward_propagation(output)
+                    else:
+                        output = layer.forward_propagation(output)
                 err += self.loss(y_train[j], output)
                 
                 error = self.loss_prime(y_train[j], output)
