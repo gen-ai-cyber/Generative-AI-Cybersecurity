@@ -1,6 +1,8 @@
 from dropout_layer import DropoutLayer
 from convolutional_layer import ConvLayer
 from max_pooling_layer import MaxPoolingLayer
+from gan import GAN
+from vae import VAE
 
 class Network:
     def __init__(self):
