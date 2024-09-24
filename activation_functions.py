@@ -1,5 +1,4 @@
 import numpy as np
-import numpy_ml as ml
 
 def tanh(x):
     return np.tanh(x);

@@ -1,21 +1,32 @@
-from layer import Layer
 import numpy as np
+from layer import Layer
 
 class FCLayer(Layer):
     def __init__(self, input_size, output_size):
-        self.weights = np.random.rand(input_size, output_size) - 0.5
-        self.bias = np.random.rand(1, output_size) - 0.5
+        self.weights = np.random.randn(input_size, output_size) * 0.1
+        self.biases = np.random.randn(1, output_size) * 0.1
 
     def forward_propagation(self, input_data):
         self.input = input_data
-        self.output = np.dot(self.input, self.weights) +self.bias
-        return self.output
-    
-    def backward_propagation(self, output_error, learning_rate):
-        input_error = np.dot(output_error, self.weights.T)
-        weights_error = np.dot(self.input.T, output_error)
+        return np.dot(self.input, self.weights) + self.biases
 
-        self.weights -= learning_rate * weights_error
-        self.bias -= learning_rate * output_error
-        return input_error
+    def backward_propagation(self, output_error, learning_rate):
+        # Reshape input and output_error to ensure proper dot product
+        if len(self.input.shape) == 1:
+            self.input = self.input.reshape(1, -1)  # Reshape input to be 2D
+        if len(output_error.shape) == 1:
+            output_error = output_error.reshape(1, -1)  # Reshape output_error to be 2D
         
+        # Gradient of weights
+        weights_error = np.dot(self.input.T, output_error)
+        # Gradient of biases
+        bias_error = np.mean(output_error, axis=0, keepdims=True)
+
+        # Backpropagate the error (to be passed to the previous layer)
+        input_error = np.dot(output_error, self.weights.T)
+
+        # Update weights and biases
+        self.weights -= learning_rate * weights_error
+        self.biases -= learning_rate * bias_error
+
+        return input_error

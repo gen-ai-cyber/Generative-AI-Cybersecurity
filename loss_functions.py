@@ -8,9 +8,19 @@ def mse_prime(y_true, y_pred):
 
 def binary_crossentropy(predictions, targets):
     # Ensure numerical stability by adding a small value (epsilon) to prevent log(0)
-    epsilon = 1e-12
-    predictions = np.clip(predictions, epsilon, 1. - epsilon)
+    epsilon = 1e-10
+    predictions = np.array(predictions)
+    targets = np.array(targets)
+    targets = np.clip(targets, epsilon, 1. - epsilon)
     
     # Calculate binary cross-entropy loss
-    loss = -np.mean(targets * np.log(predictions) + (1 - targets) * np.log(1 - predictions))
+    loss = -np.mean(predictions * np.log(targets) + (1 - predictions) * np.log(1 - targets))
+    return loss
+
+def binary_crossentropy_prime(predictions, targets):
+    epslison = 1e-10
+    predictions = np.array(predictions)
+    targets = np.array(targets)
+    targets = np.clip(targets, epslison, 1 - epslison)
+    loss = -(predictions / targets) + ((1 - predictions) / (1 - targets))
     return loss

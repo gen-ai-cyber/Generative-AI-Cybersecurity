@@ -24,36 +24,26 @@ class Network:
         for i in range(samples):
             output = input_data[i]
             for layer in self.layers:
-                if isinstance(layer, ConvLayer) or isinstance(layer, MaxPoolingLayer):
-                    output = layer.forward_propagation(output)
-                if isinstance(layer, DropoutLayer):
-                    output = layer.forward_propagation(output)
-                else:
-                    output = layer.forward_propagation(output)
-                    
+                output = layer.forward_propagation(output)
             result.append(output)
 
         return result
     
     def fit(self, x_train, y_train, epochs, learning_rate):
-        samples = len(x_train)
+        samples = len(x_train)  # Number of training samples
 
-        for i in range(epochs):
+        for epoch in range(epochs):
             err = 0
             for j in range(samples):
                 output = x_train[j]
                 for layer in self.layers:
-                    if isinstance(layer, ConvLayer) or isinstance(layer, MaxPoolingLayer):
-                        output = layer.forward_propagation(output)
-                    if isinstance(layer, DropoutLayer):
-                        output = layer.forward_propagation(output)
-                    else:
-                        output = layer.forward_propagation(output)
-                err += self.loss(y_train[j], output)
-                
+                    output = layer.forward_propagation(output)
+                err += self.loss(y_train[j], output)  # Ensure self.loss is set before calling
+
+                # Backward propagation
                 error = self.loss_prime(y_train[j], output)
                 for layer in reversed(self.layers):
                     error = layer.backward_propagation(error, learning_rate)
 
             err /= samples
-            print('epoch %d/%d  error=%f' % (i+1, epochs, err))
+            print('epoch %d/%d  error=%f' % (epoch+1, epochs, err))
