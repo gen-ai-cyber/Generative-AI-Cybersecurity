@@ -2,45 +2,44 @@
 from unified_network import UnifiedNetwork
 from gan import GAN
 import numpy as np
-from data_loader import load_phishing_emails, load_network_traffic
-from loss_functions import binary_crossentropy
+from data_loader import load_phishing_emails, load_network_traffic_from_txt
+from loss_functions import binary_crossentropy, binary_crossentropy_prime
 
-# Load your datasets (including labels)
-network_traffic = load_network_traffic('datasets/network_traffic.csv')  # Path to your network traffic data
-phishing_emails, labels = load_phishing_emails('datasets/phishing_emails.csv')  # Load phishing emails and labels
+# Load phishing emails from CSV and labels
+phishing_emails, labels = load_phishing_emails('datasets/Phishing_Legitimate_full.csv')  # Path to your phishing emails CSV file
+
+# Load network traffic data from TXT
+network_traffic = load_network_traffic_from_txt('datasets/Train.txt')  # Path to your network traffic data
+
+# Check the size of network_traffic and labels
+print(f"Size of network traffic: {network_traffic.shape[0]}")
+print(f"Size of labels: {labels.shape[0]}")
+
+# Trim network_traffic to match labels
+min_samples = labels.shape[0]  # Use the number of labels as the limiting factor
+network_traffic = network_traffic[:min_samples]
+
+# Ensure the sizes match before proceeding to fit
+if network_traffic.shape[0] != labels.shape[0]:
+    raise ValueError(f"Mismatch in dataset sizes: network_traffic has {network_traffic.shape[0]} samples, "
+                     f"but labels has {labels.shape[0]} samples.")
 
 # Initialize the unified network
-unified_network = UnifiedNetwork(input_shape=50, phishing_email_shape=300)
-
-# Initialize the GAN object
-gan = GAN(generator=unified_network.generator, discriminator=unified_network.discriminator)
+unified_network = UnifiedNetwork(input_shape=network_traffic.shape[1], phishing_email_shape=phishing_emails.shape[1])
+# unified_network.network.use(binary_crossentropy, binary_crossentropy_prime)
 
 # Training loop
 epochs = 100
 learning_rate = 0.01
-for epoch in range(epochs):
-    # Step 1: Train the VAE for anomaly detection
-    output, real_output, fake_output, reconstruction, z_mean, z_log_var = unified_network.forward(network_traffic, phishing_emails)
-    
-    # VAE Loss: Reconstruction + KL divergence
-    reconstruction_loss = np.mean((network_traffic - reconstruction) ** 2)
-    kl_loss = -0.5 * np.mean(1 + z_log_var - np.square(z_mean) - np.exp(z_log_var))
-    vae_loss = reconstruction_loss + kl_loss
 
-    # Step 2: Train the GAN for phishing email generation
-    gan.train(real_data=phishing_emails, epochs=1, learning_rate=learning_rate, noise_size=100)
+# If network_traffic has more samples than labels, trim the data
+min_samples = min(network_traffic.shape[0], labels.shape[0])
+network_traffic = network_traffic[:min_samples]
+labels = labels[:min_samples]
 
-    # Step 3: Train the classifier on both real and GAN-generated data
-    classification_loss = binary_crossentropy(output, labels)  # Binary classification loss
-    gan_loss_real = binary_crossentropy(real_output, np.ones_like(real_output))  # Real = 1
-    gan_loss_fake = binary_crossentropy(fake_output, np.zeros_like(fake_output))  # Fake = 0
-    gan_loss = gan_loss_real + gan_loss_fake
+# Train the model (VAE, GAN, and Classification Network)
+unified_network.fit(network_traffic, phishing_emails, labels, epochs, learning_rate)
 
-    # Total loss
-    total_loss = classification_loss + gan_loss + vae_loss
-
-    # Backpropagation
-    unified_network.backward(total_loss, learning_rate)
-
-    # Print losses for the current epoch
-    print(f"Epoch {epoch+1}/{epochs}, Loss: {total_loss:.4f}")
+# After training, you can use the model to predict new data
+predictions = unified_network.predict(network_traffic)
+print(predictions)
