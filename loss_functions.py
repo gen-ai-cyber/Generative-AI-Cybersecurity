@@ -14,7 +14,7 @@ def binary_crossentropy(predictions, targets):
     targets = np.clip(targets, epsilon, 1. - epsilon)
     
     # Calculate binary cross-entropy loss
-    loss = -np.mean(predictions * np.log(targets) + (1 - predictions) * np.log(1 - targets))
+    loss = -np.mean((predictions * np.log(targets + epsilon)) + ((1 - predictions) * np.log(1 - targets + epsilon)))
     return loss
 
 def binary_crossentropy_prime(predictions, targets):
