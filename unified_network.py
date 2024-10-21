@@ -85,6 +85,7 @@ class UnifiedNetwork:
             fake_output = self.discriminator.predict(fake_phishing_emails)  # Fake phishing emails
 
             # GAN Loss: Real and Fake classification
+            classification_loss = binary_crossentropy(real_output, labels)
             gan_loss_real = binary_crossentropy(real_output, np.ones_like(real_output))  # Real = 1
             gan_loss_fake = binary_crossentropy(fake_output, np.zeros_like(fake_output))  # Fake = 0
             gan_loss = gan_loss_real + gan_loss_fake
@@ -96,8 +97,22 @@ class UnifiedNetwork:
             # Step 3: Train the basic classification network
             self.network.fit(x_train, labels, epochs=1, learning_rate=learning_rate)
 
-            # Print losses for this epoch
-            total_loss = vae_loss + gan_loss
+            # Scale the losses if necessary
+            vae_loss_weight = 0.1
+            gan_loss_weight = 0.1
+            classification_loss_weight = 1.0
+
+            # Combine the losses with weights
+            total_loss = classification_loss_weight * classification_loss + \
+                        gan_loss_weight * gan_loss + \
+                        vae_loss_weight * vae_loss
+
+            # Check for NaN or Inf in the total loss
+            if np.isnan(total_loss) or np.isinf(total_loss):
+                print("NaN or Inf detected in total loss!")
+                break  # Stop the training if NaN or Inf is detected
+
+
             print(f"Epoch {epoch+1}/{epochs}, Total Loss: {total_loss:.4f}")
 
     def predict(self, input_data):
