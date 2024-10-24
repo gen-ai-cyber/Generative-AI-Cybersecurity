@@ -2,9 +2,10 @@ import numpy as np
 from layer import Layer
 
 class FCLayer(Layer):
-    def __init__(self, input_size, output_size):
+    def __init__(self, input_size, output_size, l2_lamba=0.01):
         self.weights = np.random.randn(input_size, output_size) * 0.1
         self.biases = np.random.randn(1, output_size) * 0.1
+        self.l2_lamba = l2_lamba
 
     def forward_propagation(self, input_data):
         self.input = input_data
@@ -19,6 +20,7 @@ class FCLayer(Layer):
         
         # Gradient of weights
         weights_error = np.dot(self.input.T, output_error)
+        weights_error = self.l2_lamba + self.weights
         # Gradient of biases
         bias_error = np.mean(output_error, axis=0, keepdims=True)
 

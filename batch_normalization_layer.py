@@ -10,6 +10,7 @@ class BatchNormalizationLayer(Layer):
         self.running_var = np.ones(input_shape)
         self.gamma = np.ones(input_shape)  # Scaling factor
         self.beta = np.zeros(input_shape)  # Shift factor
+        self.training = True
         
     def forward_propagation(self, input_data):
         self.input = input_data

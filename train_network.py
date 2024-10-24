@@ -2,6 +2,7 @@
 from unified_network import UnifiedNetwork
 from gan import GAN
 import numpy as np
+import joblib
 from data_loader import load_phishing_emails, load_network_traffic_from_txt
 from loss_functions import binary_crossentropy, binary_crossentropy_prime
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
@@ -30,8 +31,9 @@ unified_network = UnifiedNetwork(input_shape=network_traffic.shape[1], phishing_
 # unified_network.network.use(binary_crossentropy, binary_crossentropy_prime)
 
 # Training loop
-epochs = 100
-learning_rate = 0.00001
+epochs = 10
+learning_rate = 0.000001
+# learning_rate_decay = 0.9
 
 # If network_traffic has more samples than labels, trim the data
 min_samples = min(network_traffic.shape[0], labels.shape[0])
@@ -39,7 +41,8 @@ network_traffic = network_traffic[:min_samples]
 labels = labels[:min_samples]
 
 # Train the model (VAE, GAN, and Classification Network)
-unified_network.fit(network_traffic, phishing_emails, labels, epochs, learning_rate)
+model = unified_network.fit(network_traffic, phishing_emails, labels, epochs, learning_rate)
+joblib.dump(model, 'trained_model.joblib')
 
 # After training, you can use the model to predict new data
 predictions = unified_network.predict(network_traffic)

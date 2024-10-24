@@ -1,9 +1,3 @@
-from dropout_layer import DropoutLayer
-from convolutional_layer import ConvLayer
-from max_pooling_layer import MaxPoolingLayer
-from gan import GAN
-from vae import VAE
-
 class Network:
     def __init__(self):
         self.layers = []
@@ -28,6 +22,12 @@ class Network:
             result.append(output)
 
         return result
+    
+    def forward_propagation(self, input_data):
+        output = input_data
+        for layer in self.layers:
+            output = layer.forward_propagation(output)
+        return output
     
     def fit(self, x_train, y_train, epochs, learning_rate):
         samples = len(x_train)  # Number of training samples
