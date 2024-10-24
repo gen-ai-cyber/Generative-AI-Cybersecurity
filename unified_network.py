@@ -7,6 +7,7 @@ from convolutional_layer import ConvLayer
 from max_pooling_layer import MaxPoolingLayer
 from dropout_layer import DropoutLayer 
 from activation_layer import ActivationLayer
+from batch_normalization_layer import BatchNormalizationLayer
 from loss_functions import binary_crossentropy, binary_crossentropy_prime
 from activation_functions import relu, relu_prime, tanh, tanh_prime, sigmoid, sigmoid_prime
 
@@ -38,16 +39,20 @@ class UnifiedNetwork:
         self.discriminator.add(FCLayer(256, 1))  # Real or Fake classification
         self.discriminator.add(ActivationLayer(sigmoid, sigmoid_prime))
 
+        self.gan = GAN(self.generator, self.discriminator)
+
         # Basic Neural Network for Classification (with Convolutional Layers)
         self.network = Network()
 
         # Replace convolutional layers with fully connected layers
         self.network.add(FCLayer(self.input_shape, 512))  # First fully connected layer
         self.network.add(ActivationLayer(relu, relu_prime))
+        # self.network.add(BatchNormalizationLayer(512))
         self.network.add(DropoutLayer(0.3))  # Dropout to prevent overfitting
         
         self.network.add(FCLayer(512, 256))  # Second fully connected layer
         self.network.add(ActivationLayer(relu, relu_prime))
+        # self.network.add(BatchNormalizationLayer(256))
         self.network.add(DropoutLayer(0.3))
         
         self.network.add(FCLayer(256, 64))  # Third fully connected layer
@@ -120,3 +125,8 @@ class UnifiedNetwork:
         Predict output using the classification network.
         """
         return self.network.predict(input_data)
+    
+    def generate_synthetic_data(self, num_samples, noise_size=100):
+            # Call the generate function from the GAN
+            synthetic_data = self.gan.generate(num_samples=num_samples, noise_size=noise_size)
+            return synthetic_data
