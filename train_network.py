@@ -28,12 +28,10 @@ if network_traffic.shape[0] != labels.shape[0]:
 
 # Initialize the unified network
 unified_network = UnifiedNetwork(input_shape=network_traffic.shape[1], phishing_email_shape=phishing_emails.shape[1])
-# unified_network.network.use(binary_crossentropy, binary_crossentropy_prime)
 
 # Training loop
-epochs = 10
-learning_rate = 0.000001
-# learning_rate_decay = 0.9
+epochs = 100
+learning_rate = 0.00001
 
 # If network_traffic has more samples than labels, trim the data
 min_samples = min(network_traffic.shape[0], labels.shape[0])
@@ -48,17 +46,11 @@ joblib.dump(model, 'trained_model.joblib')
 predictions = unified_network.predict(network_traffic)
 print(predictions)
 
-# with open('./predict_output.rtf', 'r') as f:
-#     predictions = f.readlines()
-
-# Extract numerical values from predictions (clean the raw file format)
-# predictions = [list(map(float, line.strip().split(','))) for line in predictions]
-
 # Assuming that the labels are binary, you can compute accuracy
 predictions = np.array(predictions)
 predicted_classes = np.argmax(predictions, axis=1)
 probabilities = np.array([pred[0][1] for pred in predictions])
-binary_predictions = (probabilities > 0.5).astype(int)
+binary_predictions = (probabilities > 0.3).astype(int)
 
 accuracy = accuracy_score(labels, binary_predictions)
 precision = precision_score(labels, binary_predictions)
@@ -70,22 +62,3 @@ print(f"Precision: {precision}")
 print(f"Recall: {recall}")
 print(f"F1-Score: {f1}")
 print(f"Accuracy: {accuracy}")
-
-# Compute accuracy
-# accuracy = np.mean(predicted_classes == labels)
-# Assuming `predictions` contains your model's output, and `true_labels` contains the actual labels
-# You may need to threshold the predictions first
-# threshold = 0.5
-# binary_predictions = [1 if pred[0] > threshold else 0 for pred in predictions]
-# binary_predictions = (predictions[:, 1] > 0.5).astype(int)
-# Calculate performance metrics
-# accuracy = accuracy_score(labels, binary_predictions)
-# precision = precision_score(labels, binary_predictions)
-# recall = recall_score(labels, binary_predictions)
-# f1 = f1_score(labels, binary_predictions)
-
-# Print metrics
-# print(f"Accuracy: {accuracy}")
-# print(f"Precision: {precision}")
-# print(f"Recall: {recall}")
-# print(f"F1-Score: {f1}")

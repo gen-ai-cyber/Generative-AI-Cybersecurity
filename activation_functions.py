@@ -1,5 +1,7 @@
+#imports
 import numpy as np
 
+#Activation functions
 def tanh(x):
     return np.tanh(x);
 
