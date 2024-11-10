@@ -1,10 +1,8 @@
-# Import the necessary modules
-from unified_network import UnifiedNetwork
-from gan import GAN
-import numpy as np
+# Imports
 import joblib
+import numpy as np
+from unified_network import UnifiedNetwork
 from data_loader import load_phishing_emails, load_network_traffic_from_txt
-from loss_functions import binary_crossentropy, binary_crossentropy_prime
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 # Load phishing emails from CSV and labels
