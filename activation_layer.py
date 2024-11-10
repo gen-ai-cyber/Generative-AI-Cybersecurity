@@ -1,4 +1,6 @@
+# imports
 from layer import Layer
+
 
 class ActivationLayer(Layer):
     def __init__(self, activation, activation_prime):

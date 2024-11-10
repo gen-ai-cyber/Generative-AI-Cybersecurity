@@ -28,5 +28,14 @@ class GAN:
             # Print loss at the end of each epoch
             print(f"Epoch {epoch+1}/{epochs} - D Loss: {d_loss:.4f}, G Loss: {g_loss:.4f}")
 
+    def generate(self, num_samples, noise_size=100):
+        # Generate random noise
+        noise = np.random.randn(num_samples, noise_size)
+        
+        # Generate synthetic data using the generator's forward propagation
+        synthetic_data = self.generator.forward_propagation(noise)
+        
+        return synthetic_data
+
     def loss_function(self, prediction, target):
         return np.mean((prediction - target) ** 2)

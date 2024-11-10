@@ -1,7 +1,7 @@
+# imports
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
-import numpy as np
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 # Load phishing email data (assuming CSV format)
