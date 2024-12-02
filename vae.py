@@ -1,6 +1,9 @@
+# imports
 import numpy as np
 
+
 class VAE:
+    # Initialization of object
     def __init__(self, input_size, latent_size):
         self.input_size = input_size
         self.latent_size = latent_size

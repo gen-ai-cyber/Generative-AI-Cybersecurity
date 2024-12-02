@@ -9,6 +9,15 @@ from loss_functions import binary_crossentropy, binary_crossentropy_prime
 from activation_functions import relu, relu_prime, sigmoid, sigmoid_prime, tanh, tanh_prime
 
 class UnifiedNetwork:
+    """
+        UnifiedNetwork combines a Variational Autoencoder (VAE) for anomaly detection,
+        a Generative Adversarial Network (GAN) for generating phishing emails, and
+        a basic neural network for classification tasks.
+
+        Parameters:
+            input_shape (int): Number of features in the input data (e.g., network traffic).
+            phishing_email_shape (int): Number of features in phishing email data.
+    """
     def __init__(self, input_shape, phishing_email_shape):
         self.input_shape = input_shape
         self.phishing_email_shape = phishing_email_shape

@@ -2,9 +2,11 @@
 import numpy as np
 
 #Activation functions
+# Tangent
 def tanh(x):
     return np.tanh(x);
 
+# Derivative of Tan
 def tanh_prime(x):
     return 1-np.tanh(x)**2;
 
