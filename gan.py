@@ -1,10 +1,13 @@
+# imports
 import numpy as np
 
 class GAN:
+    # Initialization of GAN object
     def __init__(self, generator, discriminator):
         self.generator = generator
         self.discriminator = discriminator
 
+    # Train the GAN generator and discriminator
     def train(self, real_data, epochs, learning_rate, noise_size):
         for epoch in range(epochs):
             # Train Discriminator with real data

@@ -1,8 +1,48 @@
 # imports
+import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import StandardScaler, LabelEncoder
+
+def preprocess_data(data, labels):
+    # Step 1: Balance the dataset using SMOTE
+    smote = SMOTE(random_state=42)
+    data_resampled, labels_resampled = smote.fit_resample(data, labels)
+
+    # Step 2: Split into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(data_resampled, labels_resampled, test_size=0.2, random_state=42)
+
+    # Step 3: Scale the features
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    return X_train, X_test, y_train, y_test
+
+def load_network_traffic_data(file_path='datasets/Train.txt', label_column_index=-2):
+    # Load the dataset into a DataFrame
+    data = pd.read_csv(file_path, header=None)
+
+    # Get labels and drop the label column from features
+    raw_labels = data.iloc[:, label_column_index].values
+    features = data.drop(data.columns[label_column_index], axis=1)
+    
+    # Encode categorical columns
+    label_encoders = {}
+    for column in features.select_dtypes(include=['object']).columns:
+        le = LabelEncoder()
+        features[column] = le.fit_transform(features[column])
+        label_encoders[column] = le  # Store the encoder if you need to inverse-transform later
+
+    # Normalize numerical data
+    scaler = StandardScaler()
+    features = scaler.fit_transform(features)
+
+    labels = np.array([0 if label == 'normal' else 1 for label in raw_labels])
+
+    return features, labels
 
 # Load phishing email data (assuming CSV format)
 def load_phishing_emails(file_path='datasets/Phishing_Legitimate_full.csv'):
@@ -81,4 +121,21 @@ def load_network_traffic_from_txt(file_path):
     network_traffic = scaler.fit_transform(data)
     
     return network_traffic
+
+def load_malware_data(file_path='./datasets/Malware dataset.csv'):
+    data = pd.read_csv(file_path)
+    X = data.drop(columns=['classification', 'hash'])
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(data['classification'])
+
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+    return X_train, X_test, y_train, y_test
+    
+
+def load_intrusion_data(self):
+    pass
 
